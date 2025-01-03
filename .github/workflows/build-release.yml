@@ -71,7 +71,8 @@ jobs:
       uses: ad-m/github-push-action@v0.7.0
       with:
         branch: ${{ github.ref }}
-        github_token: ${{ secrets.TOKEN  }}
+#        TODO : update below token
+        github_token: ${{ secrets.GITHUB_TOKEN  }}
         tags: true
         force: true
 
