@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.saurabh.k8-job-rest-demo</groupId>
     <artifactId>popularity-service</artifactId>
-    <version>0.1.0</version>
+    <version>main</version>
     <name>k8-job-rest-demo</name>
     <description>k8-job-rest-demo</description>
     <url/>
