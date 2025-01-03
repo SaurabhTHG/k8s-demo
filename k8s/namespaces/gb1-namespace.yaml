@@ -1,0 +1,16 @@
+name: popularityservice
+cluster: gb1-li-beunityv3
+serviceaccounts:
+  - name: product-discovery-deploy
+    namespace: product-discovery
+
+quota:
+  requests:
+    cpu: 50
+    memory: 150Gi
+  limits:
+    cpu: 150
+    memory: 150Gi
+accessors:
+  - group: rg_infra_popularityservice-full
+    role: thg-edit

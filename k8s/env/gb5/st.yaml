@@ -1,0 +1,96 @@
+environment: pl
+nameOverride: popularity-service
+fullnameOverride: popularity-service
+
+replicaCount: 1
+#image:
+#  repository: "ghcr.io/thg-dataandai/popularityservice"
+#  tag: "1.1.7-JAVA17"  # To be defined in the deployment pipeline
+#  pullPolicy: IfNotPresent
+image:
+  repository: popularity-service
+  tag: 0.1.0
+  pullPolicy: Never
+
+
+customEnv: []
+
+dockerConfigJson: "%%DOCKER_CONFIG_JSON%%"
+
+service:
+  port: 8080
+
+healthcheck:
+  startuppath: /actuator/health
+  livepath: /actuator/health
+  readypath: /actuator/health
+  port: 8080
+  startupdelay: 80
+  periodSeconds: 5
+  livedelay: 5
+  readydelay: 5
+  startupFailureThreshold: 20
+  liveFailureThreshold: 10
+  readyFailureThreshold: 10
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 0.10
+    memory: 100Mi
+
+securityContext:
+  runAsUser: 100
+  runAsGroup: 101
+
+
+autoscaling:
+  enabled: false
+
+clusters:
+  cluster1:
+    autoscaling:
+      enabled: false
+
+config:
+  application-pl.yaml: |-
+    logging:
+      config: "/config/logback.xml"
+  logback.xml: |-
+    <configuration scan="false">
+        <appender name="CYCLIC" class="ch.qos.logback.core.read.CyclicBufferAppender">
+            <MaxSize>60</MaxSize>
+        </appender>
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%-26(%d{"yyyy-MM-dd HH:mm:ss,SSS"} [%thread]) %-5level %logger{32} - %mdc - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <logger name="GeneralLogger" level="WARN" additivity="false">
+            <appender-ref ref="CYCLIC"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <logger name="TrackerLogger" level="WARN" additivity="false">
+            <appender-ref ref="CYCLIC"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    
+        <logger name="AccessLogger" level="INFO" additivity="false">
+            <appender-ref ref="CYCLIC"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <logger name="com.thehutgroup.popularityservice.web.RequestLogFilter" level="WARN" additivity="false">
+            <appender-ref ref="CYCLIC"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    
+        <root level="WARN">
+            <appender-ref ref="CYCLIC"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </configuration>

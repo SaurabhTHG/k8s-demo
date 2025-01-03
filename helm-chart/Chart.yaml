@@ -1,0 +1,7 @@
+apiVersion: v2
+name: popularity-service
+description: A Helm chart to deploy Popularity Service on a Kubernetes cluster
+type: application
+version: 1.0.0
+annotations:
+  "application.giantswarm.io/team": search

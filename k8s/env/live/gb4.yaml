@@ -1,0 +1,17 @@
+environment: live, gb4
+
+clusters:
+  cluster1:
+    app:
+      configFiles:
+        application-gb4.yaml: |-
+
+  cluster2:
+    app:
+      configFiles:
+        application-gb4.yaml: |-
+
+  cluster3:
+    app:
+      configFiles:
+        application-gb4.yaml: |-

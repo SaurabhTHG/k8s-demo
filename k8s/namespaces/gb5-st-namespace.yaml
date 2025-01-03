@@ -1,0 +1,17 @@
+name: popularityservice
+cluster: gb5-st-unityv3
+serviceaccounts:
+  - name: product-discovery-deploy
+    namespace: product-discovery
+
+quota:
+  requests:
+    cpu: 1
+    memory: 2Gi
+    storage: 2Gi
+  limits:
+    cpu: 5
+    memory: 5Gi
+accessors:
+  - group: rg_infra_popularityservice-full
+    role: thg-edit

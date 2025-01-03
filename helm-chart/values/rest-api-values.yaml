@@ -1,0 +1,17 @@
+#replicaCount: 1
+#resources:
+#  limits:
+#    memory: "256Mi"
+#    cpu: "500m"
+#  requests:
+#    memory: "128Mi"
+#    cpu: "250m"
+#image:
+##  //TODO
+#  repository: your-docker-image
+#  tag: latest
+#  pullPolicy: IfNotPresent
+#service:
+#  type: ClusterIP
+#  port: 80
+#containerPort: 8080
