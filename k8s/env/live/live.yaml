@@ -61,18 +61,6 @@ clusters:
       minReplicas: 6
       maxReplicas: 20
       targetCPUUtilizationPercentage: 90
-  cluster2:
-    autoscaling:
-      enabled: true
-      minReplicas: 6
-      maxReplicas: 20
-      targetCPUUtilizationPercentage: 90
-  cluster3:
-    autoscaling:
-      enabled: true
-      minReplicas: 15
-      maxReplicas: 40
-      targetCPUUtilizationPercentage: 90
 
 warmup:
   enabled: true
