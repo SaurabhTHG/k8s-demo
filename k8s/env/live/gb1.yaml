@@ -6,12 +6,3 @@ clusters:
       configFiles:
         application-gb1.yaml: |-
 
-  cluster2:
-    app:
-      configFiles:
-        application-gb1.yaml: |-
-
-  cluster3:
-    app:
-      configFiles:
-        application-gb1.yaml: |-
