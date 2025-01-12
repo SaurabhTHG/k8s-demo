@@ -63,6 +63,22 @@ warmup:
 
 config:
   application-uat.yaml: |-
+    spring:
+          activemq:
+            broker-url:ssl://gb5-ua-activemqbroker-001.io.thehut.local:61617?daemon=true
+            username: popularityservice
+            password: AP3t29rZm7rmPhKbeaew
+        datasource:
+          elysium:
+            driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+            jdbc-url: jdbc:sqlserver://GFC-UA-ELYDB001.THEHUTGROUP.LOCAL:1433;databaseName=Elysium;appName=PopularityService;multiSubnetFailover=true
+            username: PopularityService
+            password: PopularityServiceUAT
+          local:
+            driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+            jdbc-url: jdbc:sqlserver://GFC-UA-TABDB001.thehut.local:1433;databaseName=PopularityService
+            username: popularityService
+            password: popularityServiceUAT
     logging:
       config: "/config/logback.xml"
   logback.xml: |-

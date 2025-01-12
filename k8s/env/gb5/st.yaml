@@ -56,6 +56,22 @@ clusters:
 
 config:
   application-pl.yaml: |-
+    spring:
+          activemq:
+            broker-url: ssl://gb5-st-activemqbroker-002.io.thehut.local:61617?daemon=true
+            username: popularityservice
+            password: GqhYenMg8dWo9bvdxGjX
+        datasource:
+          elysium:
+            driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+            jdbc-url: jdbc:sqlserver://GFC-PL-ELYDB001.THEHUTGROUP.LOCAL:1433;databaseName=Elysium;appName=PopularityService;multiSubnetFailover=true
+            username: popularityService_Readonly
+            password: popularityService_ReadonlyPL
+          local:
+            driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+            jdbc-url: jdbc:sqlserver://gfc-st-tabdb001.thehutgroup.local:1433;databaseName=PopularityService
+            username: popularityservice
+            password: PopularityServiceST
     logging:
       config: "/config/logback.xml"
   logback.xml: |-
