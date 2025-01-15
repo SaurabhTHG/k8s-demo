@@ -1,75 +1,164 @@
-# Default values for Popularity Service.
-# TODO Update before commit
-image:
-  repository: popularity-service
-#  pullPolicy: Never
-  tag: 0.1.0
-
-imagePullSecrets: []
-dockerConfigJson: ""
-podAnnotations: {}
-
-podSecurityContext:
-  fsGroup: 2000
-
-securityContext:
-  capabilities:
-    drop:
-      - ALL
-  # readOnlyRootFilesystem: true  -> review this
-  runAsNonRoot: true
-  runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 8080
+name: popularity-service
 
 serviceAccount:
   create: false
+  name: popularity-service
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-  # kubernetes.io/ingress.class: nginx
-  # kubernetes.io/tls-acme: "true"
-  hosts: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+nameOverride: ""
+fullnameOverride: ""
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 256Mi
-  requests:
-    cpu: 100m
-    memory: 256Mi
+global:
+  image:
+    repository: popularity-service
+    tag: 0.1.0
+    pullPolicy: Never
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 450m
+      memory:
+        512Mi
+#  env:
+#    # Direct value
+#    - name: APP_NAME
+#      value: "popularity-service"
+  restartPolicy: OnFailure
+
+podAnnotations:
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '8080'
+  prometheus.io/path: '/prometheus-metrics'
+
+dockerConfigJson: "%%DOCKER_CONFIG_JSON%%"
+
+service:
+  port: 8080
+
+healthcheck:
+  startuppath: /healthcheck
+  livepath: /healthcheck
+  readypath: /healthcheck
+  port: 8080
+  startupdelay: 60
+  periodSeconds: 5
+  livedelay: 5
+  readydelay: 5
+  startupFailureThreshold: 20
+  liveFailureThreshold: 6
+  readyFailureThreshold: 6
 
 
-jvmOptions: ""
+jvmOptions: "-Xms521m -XX:MaxRAMPercentage=60"
 
-nodeSelector: {}
+securityContext:
+  runAsUser: 100
+  runAsGroup: 101
 
-tolerations: []
+deployStrategy:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 10%
 
-affinity: {}
-
-customEnv: []
-
-clusters:
-  cluster1:
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 100
-      targetCPUUtilizationPercentage: 80
-      # targetMemoryUtilizationPercentage: 80
-
-    app:
-      configFiles: {}  # regular configs to populate the configMap
 
 app:
-  secretFiles: {}  # secret configs to populate the secret (provided in the Ice Kube deployments)
-  secret: {}
+  name: popularity-service
+  container:
+    name: popularity-service-app
+
+config:
+  files:
+    application.yaml: |-
+      spring:
+        datasource:
+          elysium:
+            driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          local:
+            driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          liquibase:
+            enabled: true
+            change-log: classpath:db/changelog/db.changelog-master.yaml
+      popularityService:
+        calculation:
+          period:
+            days: 1,7,14,28
+          daysValidFor: 1
+        backup:
+          keep:
+            days: 5
+        event:
+          pagination:
+            size: 500
+      management:
+        endpoint:
+          health:
+            show-details: always
+            cache-loader:
+              enabled: true
+          metrics:
+            enabled: true
+          prometheus:
+            enabled: true
+        endpoints:
+          web:
+            exposure:
+              include: "*"
+        metrics:
+          distribution:
+            percentiles:
+              http:
+                - 0.5
+                - 0.75
+                - 0.99
+                - 0.999
+        prometheus:
+          metrics:
+            export:
+              enabled: true
+      logging:
+        config: "/config/logback.xml"
+      witness:
+        read:
+          timeout: 2000
+        connection:
+          timeout=1000
+
+    logback.xml: |-
+      <configuration scan="false">
+          <appender name="CYCLIC" class="ch.qos.logback.core.read.CyclicBufferAppender">
+              <MaxSize>60</MaxSize>
+          </appender>
+          <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <layout class="com.thehutgroup.popularityservice.util.logging.KubernetesPatternLayout">
+                <pattern>[%thread] %logger{32} - %mdc - %replace(%msg){"\n"," :: "}</pattern>
+            </layout>
+          </appender>
+    
+          <logger name="GeneralLogger" level="WARN" additivity="false">
+              <appender-ref ref="CYCLIC"/>
+              <appender-ref ref="CONSOLE"/>
+          </logger>
+    
+          <logger name="TrackerLogger" level="WARN" additivity="false">
+              <appender-ref ref="CYCLIC"/>
+              <appender-ref ref="CONSOLE"/>
+          </logger>
+    
+          <logger name="AccessLogger" level="INFO" additivity="false">
+              <appender-ref ref="CYCLIC"/>
+              <appender-ref ref="CONSOLE"/>
+          </logger>
+    
+          <logger name="com.thehutgroup.popularityservice.web.RequestLogFilter" level="WARN" additivity="false">
+              <appender-ref ref="CYCLIC"/>
+              <appender-ref ref="CONSOLE"/>
+          </logger>
+    
+          <root level="WARN">
+              <appender-ref ref="CYCLIC"/>
+              <appender-ref ref="CONSOLE"/>
+          </root>
+      </configuration>

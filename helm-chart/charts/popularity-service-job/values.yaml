@@ -1,0 +1,18 @@
+image:
+  repository: popularity-service
+  tag: 0.1.0
+
+cronjob:
+  schedule: "*/5 * * * *" # Runs every 5 minutes
+  backoffLimit: 3
+  successfulJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  failedJobsHistoryLimit: 2
+  suspend: false
+  ttlSecondsAfterFinished: 300
+  restartPolicy: Never
+  env:
+    # Direct value
+    - name: RESOURCE_TYPE
+      value: "CRONJOB"

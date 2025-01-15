@@ -13,11 +13,11 @@ spring:
       enabled: true
       path: /h2-console
 
-server:
-  port: 8080
 logging:
   level:
     com.saurabh.k8jobrest.demo: debug
+
+
 
 management:
   endpoints:

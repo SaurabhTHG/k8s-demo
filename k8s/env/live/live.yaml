@@ -1,121 +1,113 @@
-nameOverride: popularity-service
-fullnameOverride: popularity-service
+popularity-service:
+  nameOverride: popularity-service
+  fullnameOverride: popularity-service
 
-image:
-  repository: popularity-service
-  tag: 0.1.0
-  pullPolicy: Never
+  image:
+    repository: popularity-service
+    tag: 0.1.0
+    pullPolicy: Never
 
-podAnnotations:
-  prometheus.io/scrape: 'true'
-  prometheus.io/port: '8080'
-  prometheus.io/path: '/actuator/prometheus'
+  podAnnotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8080'
+    prometheus.io/path: '/actuator/prometheus'
 
-dockerConfigJson: "%%DOCKER_CONFIG_JSON%%"
+  dockerConfigJson: "%%DOCKER_CONFIG_JSON%%"
 
-deployStrategy:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 20%
-      maxUnavailable: 10%
+  deployStrategy:
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 20%
+        maxUnavailable: 10%
 
-service:
-  port: 8080
+  service:
+    port: 8080
 
-healthcheck:
-  startuppath: /actuator/health
-  livepath: /actuator/health
-  readypath: /actuator/health
-  port: 8080
-  startupdelay: 30
-  periodSeconds: 5
-  livedelay: 5
-  readydelay: 5
-  startupFailureThreshold: 16
-  liveFailureThreshold: 6
-  readyFailureThreshold: 6
-  liveTimeoutSeconds: 8
+  healthcheck:
+    startuppath: /actuator/health
+    livepath: /actuator/health
+    readypath: /actuator/health
+    port: 8080
+    startupdelay: 30
+    periodSeconds: 5
+    livedelay: 5
+    readydelay: 5
+    startupFailureThreshold: 16
+    liveFailureThreshold: 6
+    readyFailureThreshold: 6
+    liveTimeoutSeconds: 8
 
-resources:
-  limits:
-    cpu: 2
-    memory: 2Gi
-  requests:
-    cpu: 450m
-    memory: 2Gi
+  resources:
+    limits:
+      cpu: 2
+      memory: 2Gi
+    requests:
+      cpu: 450m
+      memory: 2Gi
 
-jvmOptions: "-Xms512m -XX:MaxRAMPercentage=75"
+  jvmOptions: "-Xms512m -XX:MaxRAMPercentage=75"
 
-securityContext:
-  runAsUser: 100
-  runAsGroup: 101
+  securityContext:
+    runAsUser: 100
+    runAsGroup: 101
 
-autoscaling:
-  enabled: false
+  autoscaling:
+    enabled: false
 
-clusters:
-  cluster1:
-    autoscaling:
-      enabled: true
-      minReplicas: 6
-      maxReplicas: 20
-      targetCPUUtilizationPercentage: 90
-
-warmup:
-  enabled: true
-  maxReadinessWaitSeconds: 120
-  targetReadinessHttpPath: /actuator/health
-  concurrency: 2
-  maxWarmupSeconds: 15
-  requestDelayMilliseconds: 0
-  maxDurationSeconds: 300
-
-config:
-  application-live.yaml: |-
-    spring:
-      liquibase:
-        enabled: false
-      datasource:
-        url: jdbc:sqlserver://GFC-UA-TABDB001.thehut.local:1433;databaseName=PopularityService
-        username: %%DB_USERNAME%%
-        password: %%DB_PASSWORD%%
-
-    logging:
-      config: "/config/logback.xml"
-  logback.xml: |-
-    <configuration scan="false">
-        <appender name="CYCLIC" class="ch.qos.logback.core.read.CyclicBufferAppender">
-            <MaxSize>60</MaxSize>
-        </appender>
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-          <layout class="com.thehutgroup.popularityservice.util.logging.KubernetesPatternLayout">
-              <pattern>[%thread] %logger{32} - %mdc - %replace(%msg){"\n"," :: "}</pattern>
-          </layout>
-        </appender>
-
-        <logger name="GeneralLogger" level="WARN" additivity="false">
-            <appender-ref ref="CYCLIC"/>
-            <appender-ref ref="CONSOLE"/>
-        </logger>
-
-        <logger name="TrackerLogger" level="WARN" additivity="false">
-            <appender-ref ref="CYCLIC"/>
-            <appender-ref ref="CONSOLE"/>
-        </logger>
+  config:
+    files:
+      application-live.yaml: |-
+        spring:
+          liquibase:
+            enabled: false
+          datasource:
+            url: jdbc:sqlserver://GFC-UA-TABDB001.thehut.local:1433;databaseName=PopularityService
+            username: %%DB_USERNAME%%
+            password: %%DB_PASSWORD%%
     
-        <logger name="AccessLogger" level="INFO" additivity="false">
-            <appender-ref ref="CYCLIC"/>
-            <appender-ref ref="CONSOLE"/>
-        </logger>
+        logging:
+          config: "/config/logback.xml"
+      logback.xml: |-
+        <configuration scan="false">
+            <appender name="CYCLIC" class="ch.qos.logback.core.read.CyclicBufferAppender">
+                <MaxSize>60</MaxSize>
+            </appender>
+            <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+              <layout class="com.thehutgroup.popularityservice.util.logging.KubernetesPatternLayout">
+                  <pattern>[%thread] %logger{32} - %mdc - %replace(%msg){"\n"," :: "}</pattern>
+              </layout>
+            </appender>
+    
+            <logger name="GeneralLogger" level="WARN" additivity="false">
+                <appender-ref ref="CYCLIC"/>
+                <appender-ref ref="CONSOLE"/>
+            </logger>
+    
+            <logger name="TrackerLogger" level="WARN" additivity="false">
+                <appender-ref ref="CYCLIC"/>
+                <appender-ref ref="CONSOLE"/>
+            </logger>
+        
+            <logger name="AccessLogger" level="INFO" additivity="false">
+                <appender-ref ref="CYCLIC"/>
+                <appender-ref ref="CONSOLE"/>
+            </logger>
+    
+            <logger name="com.thehutgroup.popularityservice.web.RequestLogFilter" level="WARN" additivity="false">
+                <appender-ref ref="CYCLIC"/>
+                <appender-ref ref="CONSOLE"/>
+            </logger>
+    
+            <root level="WARN">
+                <appender-ref ref="CYCLIC"/>
+                <appender-ref ref="CONSOLE"/>
+            </root>
+        </configuration>
 
-        <logger name="com.thehutgroup.popularityservice.web.RequestLogFilter" level="WARN" additivity="false">
-            <appender-ref ref="CYCLIC"/>
-            <appender-ref ref="CONSOLE"/>
-        </logger>
-
-        <root level="WARN">
-            <appender-ref ref="CYCLIC"/>
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </configuration>
+popularity-service-job:
+  image:
+    repository: popularity-service
+    pullPolicy: Never
+    tag: 0.1.0
+  args: []

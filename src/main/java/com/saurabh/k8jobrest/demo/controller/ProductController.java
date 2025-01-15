@@ -21,6 +21,7 @@ public class ProductController {
 
     @GetMapping
     public List<Product> getAllProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        System.out.println("Running in POD : "+ System.getenv("HOSTNAME"));
         return productService.getAllProducts(page, size);
     }
 

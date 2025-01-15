@@ -1,7 +1,12 @@
-environment: live, gb4
+popularity-service:
+  environment: live, gb4
+  config:
+    files:
+      application-gb4.yaml: |-
 
-clusters:
-  cluster1:
-    app:
-      configFiles:
-        application-gb4.yaml: |-
+popularity-service-job:
+  image:
+    repository: popularity-service
+    pullPolicy: Never
+    tag: 0.1.0
+  args: []

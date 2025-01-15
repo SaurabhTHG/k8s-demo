@@ -1,0 +1,4 @@
+apiVersion: v2
+name: popularity-service
+description: A Helm chart for a Popularity Service application
+version: 1.0.0

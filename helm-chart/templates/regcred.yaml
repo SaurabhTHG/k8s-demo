@@ -1,12 +1,12 @@
-{{- if .Values.dockerConfigJson }}
-# Allows us to pull images from GitHub Container Registry ghcr.io/thg-engagement
-# dockerConfigJson should include a base64 encoded auth string from the SA username and PAT
-# See here: https://dev.to/asizikov/using-github-container-registry-with-kubernetes-38fb
-apiVersion: v1
-kind: Secret
-type: kubernetes.io/dockerconfigjson
-metadata:
-  name: regcred-{{ include "popularity-service.fullname" . }}
-data:
-  .dockerconfigjson: {{ .Values.dockerConfigJson }}
-{{- end }}
+{{/*{{- if .Values.dockerConfigJson }}*/}}
+{{/*# Allows us to pull images from GitHub Container Registry ghcr.io/thg-engagement*/}}
+{{/*# dockerConfigJson should include a base64 encoded auth string from the SA username and PAT*/}}
+{{/*# See here: https://dev.to/asizikov/using-github-container-registry-with-kubernetes-38fb*/}}
+{{/*apiVersion: v1*/}}
+{{/*kind: Secret*/}}
+{{/*type: kubernetes.io/dockerconfigjson*/}}
+{{/*metadata:*/}}
+{{/*  name: regcred-{{ include "popularity-service.fullname" . }}*/}}
+{{/*data:*/}}
+{{/*  .dockerconfigjson: {{ .Values.dockerConfigJson }}*/}}
+{{/*{{- end }}*/}}

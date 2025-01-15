@@ -1,0 +1,4 @@
+apiVersion: v2
+name: popularity-service-job
+description: A Helm chart for a Kubernetes job
+version: 1.0.0

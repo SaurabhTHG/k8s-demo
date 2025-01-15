@@ -5,21 +5,17 @@
 {{- $serviceAccountName := include "popularity-service.serviceAccountName" . -}}
 {{- $chartName := .Chart.Name -}}
 {{- $chartAppVersion := .Chart.AppVersion -}}
-{{- $values := .Values -}}{{- range $clusterName, $clusterValues := .Values.clusters }}
+{{- $values := .Values -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $fullName }}-{{ $clusterName }}
+  name: {{ $fullName }}
   labels:
-    popularity-service.cluster: {{ $clusterName }}
-    {{- $labels | nindent 4 }}
+    popularity-service: {{- $labels | nindent 4 }}
 spec:
-  {{- if not $clusterValues.autoscaling.enabled }}
-{{/*  TODO replicas: {{ .Values.replicaCount }}*/}}
-  {{- end }}
   selector:
     matchLabels:
-      popularity-service.cluster: {{ $clusterName }}
+      popularity-service:
       {{- $selectorLabels | nindent 6 }}
       {{- $deploymentLabel | indent 6 }}
   {{- with $values.deployStrategy }}
@@ -32,7 +28,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        popularity-service.cluster: {{ $clusterName }}
+        popularity-service:
           {{- $selectorLabels | nindent 8 }}
           {{- $deploymentLabel | indent 8 }}
     spec:
@@ -69,11 +65,10 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: {{ $values.environment }}
             - name: JAVA_TOOL_OPTIONS
-              value: "-Xmx512m -Xms256m"
-{{/*              value: {{ $values.jvmOptions }}*/}}
-{{/*                     {{- with $values.customEnv }}*/}}
-{{/*                       {{- toYaml . | nindent 12 }}*/}}
-{{/*                     {{- end }}*/}}
+              value: {{ $values.jvmOptions }}
+                     {{- with $values.customEnv }}
+                       {{- toYaml . | nindent 12 }}
+                     {{- end }}
           volumeMounts:
             - mountPath: /config
               name: config
@@ -86,30 +81,13 @@ spec:
           resources:
              {{- toYaml $values.resources | nindent 12 }}
       volumes:
-        - name: warmup-config
-          configMap:
-            name: {{ $fullName }}-warmup-config
         - name: config
           configMap:
             defaultMode: 420
-            name: {{ $fullName }}-{{ $clusterName }}-config
+            name: {{ $fullName }}-config
         {{- if $values.app.secretFiles }}
         - name: secrets
           secret:
             defaultMode: 420
             secretName: {{ $fullName }}-secret-files-configuration
         {{- end }}
-      {{- with $values.nodeSelector }}
-      nodeSelector:
-         {{- toYaml . | nindent 8 }}
-       {{- end }}
-       {{- with $values.affinity }}
-        affinity:
-         {{- toYaml . | nindent 8 }}
-       {{- end }}
-       {{- with $values.tolerations }}
-        tolerations:
-         {{- toYaml . | nindent 8 }}
-      {{- end }}
----
-{{- end }}

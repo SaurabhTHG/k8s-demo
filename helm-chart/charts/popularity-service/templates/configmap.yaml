@@ -1,0 +1,14 @@
+{{- $fullName := include "popularity-service.fullname" . -}}
+{{- $labels := include "popularity-service.labels" . -}}
+{{- $values := .Values -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-config
+  labels:
+    popularity-service:
+    {{- $labels | nindent 4 }}
+data:
+  {{ if $values.config }}
+  {{ toYaml $values.config.files | nindent 2 }}
+  {{- end }}

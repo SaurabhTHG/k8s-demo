@@ -5,3 +5,10 @@ type: application
 version: 0.1.0
 annotations:
   "application.giantswarm.io/team": search
+dependencies:
+  - name: popularity-service
+    version: 1.0.0
+    repository: "file://charts/popularity-service"
+  - name: popularity-service-job
+    version: 1.0.0
+    repository: "file://charts/popularity-service-job"
